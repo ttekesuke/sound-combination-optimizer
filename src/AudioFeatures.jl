@@ -74,13 +74,13 @@ end
 
 function split_on_grid(signal::Vector{Float64}, sample_rate::Int, tempo::Float64, subdivision::Int)
   step_seconds = 60.0 / tempo * 4.0 / subdivision
-  step_samples = max(1, round(Int, step_seconds * sample_rate))
-  count = max(1, cld(length(signal), step_samples))
+  exact_step_samples = max(1.0, step_seconds * sample_rate)
+  count = max(1, ceil(Int, length(signal) / exact_step_samples - 1e-12))
   segments = Vector{Vector{Float64}}(undef, count)
   for index in 1:count
-    first_sample = (index - 1) * step_samples + 1
-    last_sample = min(index * step_samples, length(signal))
-    segments[index] = first_sample <= last_sample ? signal[first_sample:last_sample] : zeros(step_samples)
+    first_sample = round(Int, (index - 1) * exact_step_samples) + 1
+    last_sample = min(round(Int, index * exact_step_samples), length(signal))
+    segments[index] = first_sample <= last_sample ? signal[first_sample:last_sample] : Float64[]
   end
   return segments, step_seconds
 end
