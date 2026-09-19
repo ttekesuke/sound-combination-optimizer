@@ -1,0 +1,10 @@
+.git
+.env
+frontend/node_modules
+frontend/dist
+data/jobs
+data/library/*.wav
+data/library/*.mp3
+data/library/*.ogg
+data/library/*.flac
+data/library/*.zip

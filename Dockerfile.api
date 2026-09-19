@@ -1,0 +1,11 @@
+FROM julia:1.11-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends python3 ffmpeg ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY Project.toml ./
+RUN julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+COPY . .
+RUN python3 scripts/bootstrap_demo_library.py
+EXPOSE 9111
+CMD ["sh", "-c", "python3 scripts/bootstrap_demo_library.py && exec julia --project=. scripts/start_server.jl"]
